@@ -1,0 +1,169 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+enum UserRole {
+  ADMIN
+  CLIENT
+}
+
+enum InterestStatus {
+  INTERESTED
+  HIGH_PRIORITY
+  PURCHASED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      UserRole @default(CLIENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  uploadedImages Image[]
+  comments       Comment[]
+  ratings        Rating[]
+  interests      Interest[]
+
+  @@index([email])
+}
+
+model Image {
+  id              String   @id @default(cuid())
+  filename        String
+  originalUrl     String
+  watermarkedUrl  String
+  thumbnailSmall  String? // 100px
+  thumbnailMedium String? // 400px
+  thumbnailLarge  String? // 800px
+  width           Int?
+  height          Int?
+  fileSize        Int?
+  mimeType        String?
+  metadata        Json? // EXIF data, custom metadata
+  uploadedAt      DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  uploadedById String
+  uploadedBy   User   @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+
+  folders     Folder[]
+  tags        Tag[]
+  collections Collection[]
+  comments    Comment[]
+  ratings     Rating[]
+  interests   Interest[]
+
+  @@index([uploadedById])
+  @@index([filename])
+  @@index([uploadedAt])
+}
+
+model Folder {
+  id        String   @id @default(cuid())
+  name      String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  parentId String?
+  parent   Folder?  @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children Folder[] @relation("FolderHierarchy")
+
+  images Image[]
+
+  @@index([parentId])
+  @@index([name])
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  color     String? // hex color for UI
+  createdAt DateTime @default(now())
+
+  images Image[]
+
+  @@index([name])
+}
+
+model Collection {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  images Image[]
+
+  @@index([name])
+}
+
+model Rating {
+  id               String   @id @default(cuid())
+  overallScore     Int // 1-10
+  compositionScore Int? // 1-10
+  colorScore       Int? // 1-10
+  creativityScore  Int? // 1-10
+  customLabels     Json? // Array of custom label strings
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  imageId String
+  image   Image  @relation(fields: [imageId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([imageId, userId]) // One rating per user per image
+  @@index([imageId])
+  @@index([userId])
+  @@index([overallScore])
+}
+
+model Comment {
+  id          String   @id @default(cuid())
+  content     String
+  editHistory Json? // Array of {content: string, editedAt: string}
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  imageId String
+  image   Image  @relation(fields: [imageId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([imageId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Interest {
+  id       String         @id @default(cuid())
+  status   InterestStatus @default(INTERESTED)
+  notes    String?
+  markedAt DateTime       @default(now())
+  updatedAt DateTime      @updatedAt
+
+  imageId String
+  image   Image  @relation(fields: [imageId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([imageId, userId]) // One interest marking per user per image
+  @@index([imageId])
+  @@index([userId])
+  @@index([status])
+}
