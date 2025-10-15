@@ -1,10 +1,35 @@
 import Link from 'next/link';
-import { ArrowRight, Image as ImageIcon, Sparkles } from 'lucide-react';
+import { ArrowRight, Image as ImageIcon, Sparkles, Eye } from 'lucide-react';
+import { LogoSection } from '@/components/navigation/logo-section';
+import { UserMenu } from '@/components/navigation/user-menu';
+import { Button } from '@/components/ui/button';
+import { auth } from '@/auth';
 
-export default function HomePage() {
+export default async function HomePage() {
+  const session = await auth();
+
   return (
-    <main className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white">
-      <div className="container mx-auto px-4 py-20">
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white">
+      {/* Navigation */}
+      <nav className="glass border-b border-gray-200/50 sticky top-0 z-50" aria-label="Main navigation">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <LogoSection variant="public" />
+            <div className="flex items-center gap-4">
+              <Link href="/gallery">
+                <Button variant="ghost" size="sm">
+                  <Eye className="w-4 h-4 mr-2" aria-hidden="true" />
+                  Gallery
+                </Button>
+              </Link>
+              <UserMenu session={session} variant="public" />
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <main className="container mx-auto px-4 py-20">
         <div className="flex flex-col items-center justify-center text-center space-y-8">
           {/* Logo/Icon */}
           <div className="relative">
@@ -75,7 +100,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }

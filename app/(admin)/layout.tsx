@@ -1,7 +1,10 @@
 import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Image as ImageIcon, LayoutDashboard, Upload, Settings, LogOut } from 'lucide-react';
+import { LogoSection } from '@/components/navigation/logo-section';
+import { UserMenu } from '@/components/navigation/user-menu';
+import { UploadFAB } from '@/components/navigation/upload-fab';
+import { MobileBottomNav } from '@/components/navigation/mobile-bottom-nav';
+import { adminNavConfig } from '@/components/navigation/nav-items';
 import { Button } from '@/components/ui/button';
 
 export default async function AdminLayout({
@@ -18,70 +21,58 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white">
+      {/* Skip Link */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-md"
+      >
+        Skip to main content
+      </a>
+
       {/* Top Navigation */}
-      <nav className="glass border-b border-gray-200/50 sticky top-0 z-50">
+      <nav className="glass border-b border-gray-200/50 sticky top-0 z-50" aria-label="Primary navigation">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/dashboard" className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl">
-                <ImageIcon className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg font-semibold">Farm Ranch Media</h1>
-                <p className="text-xs text-gray-600">Admin Panel</p>
-              </div>
-            </Link>
+            <LogoSection variant="admin" />
 
             <div className="flex items-center gap-4">
+              {/* Desktop Navigation - Hidden on mobile */}
               <div className="hidden md:flex items-center gap-2">
-                <Link href="/dashboard">
-                  <Button variant="ghost" size="sm">
-                    <LayoutDashboard className="w-4 h-4 mr-2" />
-                    Dashboard
-                  </Button>
-                </Link>
-                <Link href="/upload">
-                  <Button
-                    size="sm"
-                    className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md hover:shadow-lg transition-all"
-                  >
-                    <Upload className="w-4 h-4 mr-2" />
-                    Upload
-                  </Button>
-                </Link>
-                <Link href="/manage">
-                  <Button variant="ghost" size="sm">
-                    <Settings className="w-4 h-4 mr-2" />
-                    Manage
-                  </Button>
-                </Link>
-                <Link href="/gallery">
-                  <Button variant="ghost" size="sm">
-                    View Gallery
-                  </Button>
-                </Link>
+                {adminNavConfig.map(({ href, label, icon: Icon, highlight }) => (
+                  <Link key={href} href={href}>
+                    <Button
+                      variant={highlight ? 'default' : 'ghost'}
+                      size="sm"
+                      className={
+                        highlight
+                          ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md hover:shadow-lg transition-all'
+                          : ''
+                      }
+                    >
+                      <Icon className="w-4 h-4 mr-2" aria-hidden="true" />
+                      {label}
+                    </Button>
+                  </Link>
+                ))}
               </div>
 
-              <div className="flex items-center gap-2 pl-4 border-l border-gray-300">
-                <span className="text-sm text-gray-600 hidden sm:inline">
-                  {session?.user?.email || 'Dev Mode'}
-                </span>
-                {session && (
-                  <form action="/api/auth/signout" method="POST">
-                    <Button variant="outline" size="sm">
-                      <LogOut className="w-4 h-4 mr-2" />
-                      Sign Out
-                    </Button>
-                  </form>
-                )}
-              </div>
+              {/* User Menu */}
+              <UserMenu session={session} variant="admin" />
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">{children}</main>
+      {/* Main Content - Add padding bottom for mobile nav */}
+      <main id="main-content" className="container mx-auto px-4 py-8 pb-24 md:pb-8">
+        {children}
+      </main>
+
+      {/* Mobile Navigation - Only on mobile */}
+      <MobileBottomNav items={adminNavConfig} />
+
+      {/* Upload FAB - Only on mobile */}
+      <UploadFAB />
     </div>
   );
 }
