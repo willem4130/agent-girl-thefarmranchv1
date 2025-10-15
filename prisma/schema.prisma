@@ -21,6 +21,11 @@ enum InterestStatus {
   PURCHASED
 }
 
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -39,20 +44,22 @@ model User {
 }
 
 model Image {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   filename        String
+  mediaType       MediaType @default(IMAGE)
   originalUrl     String
   watermarkedUrl  String
   thumbnailSmall  String? // 100px
   thumbnailMedium String? // 400px
   thumbnailLarge  String? // 800px
+  duration        Int? // Video duration in seconds
   width           Int?
   height          Int?
   fileSize        Int?
   mimeType        String?
-  metadata        Json? // EXIF data, custom metadata
-  uploadedAt      DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  metadata        Json? // EXIF data, custom metadata, video codec info
+  uploadedAt      DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   uploadedById String
   uploadedBy   User   @relation(fields: [uploadedById], references: [id], onDelete: Cascade)

@@ -4,9 +4,9 @@ export default function UploadPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-4xl font-bold mb-2">Upload Images</h1>
+        <h1 className="text-4xl font-bold mb-2">Upload Media</h1>
         <p className="text-gray-600">
-          Upload new images to your gallery. Images will be automatically watermarked and optimized.
+          Upload images and videos to your gallery. Images will be automatically watermarked and optimized.
         </p>
       </div>
 
@@ -17,7 +17,11 @@ export default function UploadPage() {
         <ul className="space-y-2 text-sm text-gray-600">
           <li className="flex items-start gap-2">
             <span className="text-green-600 mt-0.5">✓</span>
-            <span>Supported formats: JPG, PNG, WebP, GIF</span>
+            <span><strong>Image formats:</strong> JPG, PNG, WebP, GIF, HEIC, AVIF</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="text-green-600 mt-0.5">✓</span>
+            <span><strong>Video formats:</strong> MP4, MOV, WebM</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-green-600 mt-0.5">✓</span>
@@ -25,11 +29,15 @@ export default function UploadPage() {
           </li>
           <li className="flex items-start gap-2">
             <span className="text-green-600 mt-0.5">✓</span>
-            <span>Thumbnails (100px, 400px, 800px) will be generated automatically</span>
+            <span>Thumbnails (100px, 400px, 800px) generated automatically for images</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-green-600 mt-0.5">✓</span>
-            <span>You can upload multiple images at once</span>
+            <span>Upload multiple files at once (images and videos)</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="text-green-600 mt-0.5">✓</span>
+            <span>All aspect ratios supported (portrait, landscape, square)</span>
           </li>
         </ul>
       </div>

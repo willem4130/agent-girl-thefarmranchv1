@@ -41,7 +41,7 @@ export function UploadZone() {
     setIsDragging(false);
 
     const droppedFiles = Array.from(e.dataTransfer.files).filter((file) =>
-      file.type.startsWith('image/')
+      file.type.startsWith('image/') || file.type.startsWith('video/')
     );
 
     addFiles(droppedFiles);
@@ -144,7 +144,7 @@ export function UploadZone() {
           <input
             type="file"
             multiple
-            accept="image/*"
+            accept="image/*,video/mp4,video/quicktime,video/webm"
             onChange={handleFileInput}
             className="hidden"
           />
@@ -154,7 +154,7 @@ export function UploadZone() {
             }`}
           />
           <p className="text-lg font-medium mb-2">
-            {isDragging ? 'Drop images here' : 'Drag & drop images here'}
+            {isDragging ? 'Drop files here' : 'Drag & drop images/videos here'}
           </p>
           <p className="text-sm text-gray-600 mb-4">or click to browse</p>
           <Button variant="glossy" type="button">
@@ -195,11 +195,19 @@ export function UploadZone() {
                 className="relative group rounded-lg overflow-hidden bg-gray-100"
               >
                 <div className="aspect-square relative">
-                  <img
-                    src={uploadFile.preview}
-                    alt={uploadFile.file.name}
-                    className="w-full h-full object-cover"
-                  />
+                  {uploadFile.file.type.startsWith('video/') ? (
+                    <video
+                      src={uploadFile.preview}
+                      className="w-full h-full object-cover"
+                      muted
+                    />
+                  ) : (
+                    <img
+                      src={uploadFile.preview}
+                      alt={uploadFile.file.name}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
 
                   {/* Status Overlay */}
                   {uploadFile.status !== 'pending' && (

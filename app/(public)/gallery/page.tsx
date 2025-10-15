@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { VirtualGallery } from '@/components/gallery/virtual-gallery';
+import { VirtualGalleryImproved } from '@/components/gallery/virtual-gallery-improved';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -121,7 +121,7 @@ export default function GalleryPage() {
             </p>
           </Card>
         ) : (
-          <VirtualGallery
+          <VirtualGalleryImproved
             images={filteredImages}
             columns={columns}
             onImageClick={(image, index) => setLightboxIndex(index)}

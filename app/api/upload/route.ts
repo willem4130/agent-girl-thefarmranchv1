@@ -1,6 +1,7 @@
 import { auth } from '@/auth';
 import { prisma } from '@/lib/db/prisma';
 import { processAndUploadImage } from '@/lib/image-processing/upload';
+import { processAndUploadVideo } from '@/lib/image-processing/video-upload';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
@@ -27,13 +28,27 @@ export async function POST(request: NextRequest) {
       const timestamp = Date.now();
       const filename = `${timestamp}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
 
-      // Process and upload image
-      const uploadResult = await processAndUploadImage(file, filename);
+      const isVideo = file.type.startsWith('video/');
 
-      // Save to database
-      const image = await prisma.image.create({
-        data: {
+      let mediaData: any;
+
+      if (isVideo) {
+        // Process and upload video
+        const videoResult = await processAndUploadVideo(file, filename);
+        mediaData = {
           filename: file.name,
+          mediaType: 'VIDEO',
+          originalUrl: videoResult.originalUrl,
+          watermarkedUrl: videoResult.originalUrl, // Videos aren't watermarked
+          fileSize: videoResult.fileSize,
+          mimeType: videoResult.mimeType,
+        };
+      } else {
+        // Process and upload image
+        const uploadResult = await processAndUploadImage(file, filename);
+        mediaData = {
+          filename: file.name,
+          mediaType: 'IMAGE',
           originalUrl: uploadResult.originalUrl,
           watermarkedUrl: uploadResult.watermarkedUrl,
           thumbnailSmall: uploadResult.thumbnailSmall,
@@ -43,6 +58,13 @@ export async function POST(request: NextRequest) {
           height: uploadResult.height,
           fileSize: uploadResult.fileSize,
           mimeType: uploadResult.mimeType,
+        };
+      }
+
+      // Save to database
+      const media = await prisma.image.create({
+        data: {
+          ...mediaData,
           uploadedById: session.user.id,
           folders: folderIds.length > 0 ? {
             connect: folderIds.map(id => ({ id })),
@@ -57,7 +79,7 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      uploadedImages.push(image);
+      uploadedImages.push(media);
     }
 
     return NextResponse.json({
