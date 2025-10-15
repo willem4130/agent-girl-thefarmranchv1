@@ -82,6 +82,7 @@ export function VirtualGalleryImproved({
                     isHovered={hoveredIndex === imageIndex}
                     onHover={setHoveredIndex}
                     onClick={onImageClick || (() => {})}
+                    columns={columns}
                   />
                 );
               })}

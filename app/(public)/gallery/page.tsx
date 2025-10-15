@@ -56,8 +56,7 @@ export default function GalleryPage() {
   }));
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="space-y-6">
+    <div className="space-y-6">
         {/* Header & Controls */}
         <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
           <div>
@@ -104,7 +103,6 @@ export default function GalleryPage() {
             onImageClick={(image, index) => setLightboxIndex(index)}
           />
         )}
-      </div>
 
       {/* Lightbox */}
       <Lightbox

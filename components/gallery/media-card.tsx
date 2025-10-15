@@ -10,6 +10,7 @@ interface MediaCardProps {
   isHovered: boolean;
   onHover: (index: number | null) => void;
   onClick: (media: ImageType, index: number) => void;
+  columns?: number;
 }
 
 export function MediaCard({
@@ -18,12 +19,32 @@ export function MediaCard({
   isHovered,
   onHover,
   onClick,
+  columns = 4,
 }: MediaCardProps) {
   const [imageError, setImageError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const isVideo = media.mimeType?.startsWith('video/');
-  const thumbnailUrl = media.thumbnailMedium || media.watermarkedUrl;
+
+  // Select appropriate thumbnail based on grid size for optimal quality
+  const getThumbnailUrl = () => {
+    // Large view (1-2 columns): use large (800px) or fallback to watermarked
+    if (columns <= 2) {
+      return media.thumbnailLarge || media.watermarkedUrl;
+    }
+    // Medium view (3-4 columns): use medium (400px)
+    if (columns <= 4) {
+      return media.thumbnailMedium || media.thumbnailLarge || media.watermarkedUrl;
+    }
+    // Small view (5-6 columns): use medium
+    if (columns <= 6) {
+      return media.thumbnailMedium || media.thumbnailSmall || media.watermarkedUrl;
+    }
+    // Very small (7-8 columns): use small (100px) or medium
+    return media.thumbnailSmall || media.thumbnailMedium || media.watermarkedUrl;
+  };
+
+  const thumbnailUrl = getThumbnailUrl();
 
   return (
     <div

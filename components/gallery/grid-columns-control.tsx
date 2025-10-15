@@ -91,9 +91,9 @@ export function GridColumnsControl({
       {/* Quick presets */}
       <div className="flex gap-1 text-xs">
         {[
-          { value: 2, label: 'Small' },
+          { value: 6, label: 'Small' },
           { value: 4, label: 'Medium' },
-          { value: 6, label: 'Large' },
+          { value: 2, label: 'Large' },
         ].map(({ value, label }) => (
           <button
             key={value}
