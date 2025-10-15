@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { NavItem } from './nav-items';
+import { getIcon } from './icon-map';
 
 interface MobileBottomNavProps {
   items: NavItem[];
@@ -27,7 +28,8 @@ export function MobileBottomNav({ items }: MobileBottomNavProps) {
       aria-label="Mobile navigation"
     >
       <div className="h-16 flex items-center justify-around px-2">
-        {navItems.map(({ icon: Icon, label, href }) => {
+        {navItems.map(({ icon, label, href }) => {
+          const Icon = getIcon(icon);
           const isActive = pathname === href ||
                           (href !== '/' && pathname.startsWith(href));
 
