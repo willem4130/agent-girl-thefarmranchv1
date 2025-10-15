@@ -1,21 +1,38 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { VirtualGalleryImproved } from '@/components/gallery/virtual-gallery-improved';
-import { Button } from '@/components/ui/button';
+import { GridColumnsControl } from '@/components/gallery/grid-columns-control';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Loader2, Grid3x3, Grid2x2, LayoutGrid, Maximize2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { Image as ImageType } from '@prisma/client';
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 
 export default function GalleryPage() {
-  const [columns, setColumns] = useState(4);
+  const [columns, setColumnsInternal] = useState(4);
   const [searchTerm, setSearchTerm] = useState('');
   const [lightboxIndex, setLightboxIndex] = useState(-1);
+
+  // Load saved columns preference from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('gallery-columns');
+    if (saved) {
+      const parsed = Number(saved);
+      if (!isNaN(parsed) && parsed >= 1 && parsed <= 8) {
+        setColumnsInternal(parsed);
+      }
+    }
+  }, []);
+
+  // Save columns preference with validation
+  const setColumns = (value: number) => {
+    const clamped = Math.min(Math.max(value, 1), 8);
+    setColumnsInternal(clamped);
+    localStorage.setItem('gallery-columns', String(clamped));
+  };
 
   const { data: images = [], isLoading } = useQuery<ImageType[]>({
     queryKey: ['images'],
@@ -51,51 +68,11 @@ export default function GalleryPage() {
           </div>
 
           {/* Grid Size Controls */}
-          <Card className="glass p-4 flex items-center gap-2">
-            <Label className="text-sm font-medium">Grid:</Label>
-            <div className="flex gap-1">
-              <Button
-                variant={columns === 1 ? 'default' : 'outline'}
-                size="icon"
-                onClick={() => setColumns(1)}
-                title="Single column"
-              >
-                <Maximize2 className="w-4 h-4" />
-              </Button>
-              <Button
-                variant={columns === 2 ? 'default' : 'outline'}
-                size="icon"
-                onClick={() => setColumns(2)}
-                title="2 columns"
-              >
-                <Grid2x2 className="w-4 h-4" />
-              </Button>
-              <Button
-                variant={columns === 3 ? 'default' : 'outline'}
-                size="icon"
-                onClick={() => setColumns(3)}
-                title="3 columns"
-              >
-                <Grid3x3 className="w-4 h-4" />
-              </Button>
-              <Button
-                variant={columns === 4 ? 'default' : 'outline'}
-                size="icon"
-                onClick={() => setColumns(4)}
-                title="4 columns"
-              >
-                <LayoutGrid className="w-4 h-4" />
-              </Button>
-              <Input
-                type="number"
-                min="1"
-                max="12"
-                value={columns}
-                onChange={(e) => setColumns(Number(e.target.value))}
-                className="w-16 text-center"
-              />
-            </div>
-          </Card>
+          <GridColumnsControl
+            columns={columns}
+            onColumnsChange={setColumns}
+            className="w-full md:w-80"
+          />
         </div>
 
         {/* Search Bar */}
