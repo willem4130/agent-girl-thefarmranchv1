@@ -40,7 +40,10 @@ export default async function AdminLayout({
                   </Button>
                 </Link>
                 <Link href="/upload">
-                  <Button variant="ghost" size="sm">
+                  <Button
+                    size="sm"
+                    className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md hover:shadow-lg transition-all"
+                  >
                     <Upload className="w-4 h-4 mr-2" />
                     Upload
                   </Button>
