@@ -117,6 +117,14 @@ export function UploadZone() {
         });
       }
     }
+
+    // After all uploads complete, show success message
+    const allSuccess = files.every((f) => f.status === 'success');
+    if (allSuccess) {
+      setTimeout(() => {
+        window.location.href = '/gallery';
+      }, 1500);
+    }
   };
 
   const clearAll = () => {
@@ -169,16 +177,27 @@ export function UploadZone() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-lg font-semibold">
-                {files.length} {files.length === 1 ? 'File' : 'Files'}
+                {files.length} {files.length === 1 ? 'File' : 'Files'} Selected
               </h3>
               <p className="text-sm text-gray-600">
-                {successCount} uploaded, {pendingCount} pending
+                {successCount > 0 && (
+                  <span className="text-green-600 font-medium">{successCount} uploaded ✓</span>
+                )}
+                {successCount > 0 && pendingCount > 0 && <span className="mx-2">•</span>}
+                {pendingCount > 0 && <span>{pendingCount} pending</span>}
+                {successCount > 0 && pendingCount === 0 && (
+                  <span className="ml-2">Redirecting to gallery...</span>
+                )}
               </p>
             </div>
             <div className="flex gap-2">
               {pendingCount > 0 && (
-                <Button onClick={uploadFiles} variant="glossy">
-                  <Upload className="w-4 h-4 mr-2" />
+                <Button
+                  onClick={uploadFiles}
+                  size="lg"
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all"
+                >
+                  <Upload className="w-5 h-5 mr-2" />
                   Upload {pendingCount} {pendingCount === 1 ? 'File' : 'Files'}
                 </Button>
               )}
