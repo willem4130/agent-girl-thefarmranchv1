@@ -61,8 +61,8 @@ model Image {
   uploadedAt      DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  uploadedById String
-  uploadedBy   User   @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+  uploadedById String?
+  uploadedBy   User?   @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
 
   folders     Folder[]
   tags        Tag[]

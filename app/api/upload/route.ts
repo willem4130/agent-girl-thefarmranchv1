@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       const media = await prisma.image.create({
         data: {
           ...mediaData,
-          uploadedById: session?.user?.id || 'dev-user',
+          uploadedById: session?.user?.id || null,
           folders: folderIds.length > 0 ? {
             connect: folderIds.map(id => ({ id })),
           } : undefined,
