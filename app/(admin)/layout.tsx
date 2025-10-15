@@ -11,9 +11,10 @@ export default async function AdminLayout({
 }) {
   const session = await auth();
 
-  if (!session || session.user.role !== 'ADMIN') {
-    redirect('/login');
-  }
+  // Auth disabled for development
+  // if (!session || session.user.role !== 'ADMIN') {
+  //   redirect('/login');
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white">
@@ -63,14 +64,16 @@ export default async function AdminLayout({
 
               <div className="flex items-center gap-2 pl-4 border-l border-gray-300">
                 <span className="text-sm text-gray-600 hidden sm:inline">
-                  {session.user.email}
+                  {session?.user?.email || 'Dev Mode'}
                 </span>
-                <form action="/api/auth/signout" method="POST">
-                  <Button variant="outline" size="sm">
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Sign Out
-                  </Button>
-                </form>
+                {session && (
+                  <form action="/api/auth/signout" method="POST">
+                    <Button variant="outline" size="sm">
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sign Out
+                    </Button>
+                  </form>
+                )}
               </div>
             </div>
           </div>
